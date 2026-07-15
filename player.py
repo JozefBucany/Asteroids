@@ -1,14 +1,20 @@
+from turtle import position
+
 import pygame
 from circleshape import CircleShape
-from constants import PLAYER_RADIUS, PLAYER_SPEED, PLAYER_TURN_SPEED
+from constants import PLAYER_RADIUS, PLAYER_SHOOT_COOLDOWN_SECONDS, PLAYER_SHOOT_SPEED, PLAYER_SPEED, PLAYER_TURN_SPEED, SHOT_RADIUS
+from shot import Shot
 
 class Player(CircleShape):
     def __init__(self, x: float, y:float):
         super().__init__(x,y, 0.0)
         self.radius = PLAYER_RADIUS
         self.rotation = 0.0
+        self.posx = x
+        self.posy = y
         self.swap = True
         self.swap_cooldown = 0.5
+        self.shoot_cooldown = 0
 
 
     def triangle(self) -> list[pygame.Vector2]:
@@ -51,3 +57,17 @@ class Player(CircleShape):
             self.move(dt)
         if keys[pygame.K_s]:
             self.move(-dt)
+
+        self.shoot_cooldown -= dt
+        if keys[pygame.K_SPACE]:
+            if keys[pygame.K_SPACE] and self.shoot_cooldown < 0:
+                self.shoot_cooldown = PLAYER_SHOOT_COOLDOWN_SECONDS
+                self.shoot()
+            if self.shoot_cooldown < -1000: self.swap_cooldown = 0
+
+
+    def shoot(self):
+        shot = Shot(self.position, self.position,SHOT_RADIUS)
+        shot.velocity = pygame.Vector2(0,1)
+        shot.velocity = shot.velocity.rotate(self.rotation)
+        shot.velocity *= PLAYER_SHOOT_SPEED
