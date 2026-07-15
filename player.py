@@ -7,6 +7,9 @@ class Player(CircleShape):
         super().__init__(x,y, 0.0)
         self.radius = PLAYER_RADIUS
         self.rotation = 0.0
+        self.swap = True
+        self.swap_cooldown = 0.5
+
 
     def triangle(self) -> list[pygame.Vector2]:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -30,7 +33,15 @@ class Player(CircleShape):
     def update(self, dt: float) -> None:
         keys = pygame.key.get_pressed()
 
-        reverse = -1 if keys[pygame.K_s] else 1
+        reverse = -1 if keys[pygame.K_s] and self.swap else 1
+        self.swap_cooldown -= dt
+        if keys[pygame.K_r] and self.swap_cooldown < 0:
+            self.swap_cooldown = 0.5
+            if self.swap:
+                self.swap = False
+            else:
+               self.swap = True
+        if self.swap_cooldown < -1000: self.swap_cooldown = 0
 
         if keys[pygame.K_a]:
             self.rotate(-dt * reverse)
