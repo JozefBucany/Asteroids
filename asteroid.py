@@ -24,7 +24,7 @@ class Asteroid(CircleShape):
            return
         log_event("asteroid_split")
         a = random.uniform(20,50)
-        velocity = self.velocity.rotate(a)
+        velocity = 1.2 * self.velocity.rotate(a)
         self.radius -= ASTEROID_MIN_RADIUS
         asteroid = Asteroid(self.position.x, self.position.y, self.radius)
         asteroid.velocity = velocity
