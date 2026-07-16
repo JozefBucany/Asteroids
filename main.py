@@ -9,6 +9,8 @@ from logger import log_state
 import pygame
 import sys
 
+import shot
+
 def main():
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
@@ -30,7 +32,7 @@ def main():
     pygame.display.init()
     clock = pygame.time.Clock()
     dt = 0.0
-    time = 0.0
+    score = 0
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
     while True:
@@ -42,13 +44,19 @@ def main():
         for object in drawable:
             object.draw(screen)
         for check in asteroids:
+            for strela in shots:
+                if check.collides_with(strela):
+                    log_event("asteroid_shot")
+                    strela.kill()
+                    check.split()
+                    score += 1
+
             if check.collides_with(player):
                 log_event("player_hit")
                 print("Game Over!")
-                print(f"Your time was: {round(time, 1)} seconds")
+                print(f"You reached new high score: {score}")
                 sys.exit()
         dt = clock.tick(60)/1000
-        time += dt
 
         log_state()
         pygame.display.flip()
